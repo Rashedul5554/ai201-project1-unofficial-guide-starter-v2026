@@ -26,6 +26,8 @@ contains the answer.
 <!-- e.g. "One of my questions is about a topic only two documents mention, so
      I expect that one to be hard." -->
 
+Each of my five questions has an answer in a specific, short campus document, so I expect retrieval to find the relevant information in most cases. Similar administrative topics may compete in search results. Requiring four of five allows one retrieval miss to investigate, while a lower target would accept too many missed answers that are present in the collection.
+
 ---
 
 ## 2. Every answer names a source
@@ -35,6 +37,8 @@ Every answer the system produces names at least one source document.
 **Why this target:**
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
+
+Every document has a source filename that the system can use to identify where its answer came from. Students need to verify details about deadlines, financial aid, and housing, so every generated answer should name a source. Allowing even one answer without a source would leave that answer difficult to check.
 
 ---
 
@@ -53,9 +57,11 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
+My collection focuses on campus life, while the five out-of-scope questions ask about unrelated subjects such as engine maintenance and programming. The gate should reject these instead of allowing unsupported answers. Requiring four of five refusals allows one possible retrieval mismatch to investigate, while a lower target would permit too many answers outside the collection. I have not measured the distance scores yet; I will examine them when choosing the cutoff in Milestone 4.
+
 ---
 
-## 4. Something about your chunks
+## 4. Chunks preserve complete explanations
 
 <!-- YOU WRITE THIS ONE.
 
@@ -70,14 +76,18 @@ in at least 4 of 5 tries.
           in my corpus turned out to be a heading with no content under it." -->
 
 
+I will inspect the five chunks included in my README’s Sample Chunks section. At least 4 of 5 must contain complete body-text sentences, with no sentence cut off at either boundary. Document titles and headings do not count as incomplete sentences.. If a chunk includes a rule that has an exception or contrast in the same source paragraph, it must also include that exception or contrast.
 
 **Why this target:**
 
+The campus documents I read are short, but separating related statements could change their meaning. For example, the financial-aid document explains both that work-study earnings do not count against aid the way ordinary income does and that non-work-study campus earnings do count. A chunk describing this comparison should preserve both statements.
+
+I chose four out of five because these short documents should usually fit complete explanations into a chunk, while allowing one problematic split to investigate and improve.
 
 
 ---
 
-## 5. Your choice
+## 5. Cited sources support the answers
 
 <!-- YOU WRITE THIS ONE TOO.
 
@@ -87,11 +97,14 @@ in at least 4 of 5 tries.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
+For at least 4 of my 5 test questions, the answer directly addresses the question, and every factual claim is supported by the document or documents it cites. I will check each answer against its cited sources. A refusal to answer one of these in-scope questions counts as a failure.
 
 
 **Why this target:**
 
+My questions concern specific campus rules where small distinctions matter. For example, an answer about housing priority must distinguish the random numbers given to rising sophomores from the credit-hour priority used for juniors and seniors. Merely naming the housing document does not prove the answer represents it correctly.
 
+I chose four out of five because each question has a clear answer in the documents I read. This requires consistent, supported answers while allowing one failure to investigate and improve.
 
 ---
 
