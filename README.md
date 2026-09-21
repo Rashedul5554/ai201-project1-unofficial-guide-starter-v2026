@@ -1,21 +1,5 @@
 # The Unofficial Guide
-
-<!-- Replace this line with your name and which corpus you picked. -->
-
-> **This file is your submission.** Fill it in as you go — most sections get
-> written during the milestone that produces them, not at the end.
->
-> How the starter works, and every command you'll need, is in `RUNNING.md`.
-> Leave that file alone.
->
-> **Paste everything as text.** No screenshots, no video. A typed table gets
-> full credit; a picture of the same table gets none.
->
-> Delete these instruction blocks as you replace them. The `<!-- -->` comments
-> are notes to you and don't show up when the page renders — you can leave them
-> or remove them.
-
----
+Md Rashedul Islam — Corpus: `campus_life
 
 # Unit 1
 
@@ -26,6 +10,8 @@
      this repo.
 
      Milestone 5. -->
+
+     The Unofficial Guide searches the campus_life collection of 88 documents to answer questions about campus rules and student experiences. It keeps each document as one chunk, creates embeddings locally, and retrieves relevant documents with Chroma. Gemini generates answers from the retrieved text and names the source files. A relevance gate refuses questions when the closest document’s distance exceeds 0.6.
 
 ## Chunking Strategy
 
@@ -56,7 +42,7 @@
 
      Milestone 3. -->
 
-**Chunk 1** — source: `` — produced by: ``
+**Chunk 1** — source: `` — produced by: **Chunk 1** ``
 
 ```
 ======================================================================
@@ -68,7 +54,7 @@ You can add a course through the end of the second week. Dropping is a longer wi
 
 ```
 
-**Chunk 2** — source: `` — produced by: ``
+**Chunk 2** — source: `` — produced by: **Chunk 2** ``
 
 ```
 ======================================================================
@@ -84,7 +70,7 @@ The one piece of advice: the unit tests come fast, roughly every three weeks; fa
 
 ```
 
-**Chunk 3** — source: `` — produced by: ``
+**Chunk 3** — source: `` — produced by: **Chunk31**``
 
 ```
 ======================================================================
@@ -98,7 +84,7 @@ It's front-loaded — the first month is heavier than the rest, partly because y
 
 ```
 
-**Chunk 4** — source: `` — produced by: ``
+**Chunk 4** — source: `` — produced by: **Chunk 4** ``
 
 ```
 ======================================================================
@@ -112,7 +98,7 @@ Also worth saying: the furthest hall from anywhere, next to the athletics centre
 
 ```
 
-**Chunk 5** — source: `` — produced by: ``
+**Chunk 5** — source: `` — produced by:  **Chunk 5** ``
 
 ```
 ======================================================================
@@ -135,11 +121,13 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
 
-**Question:**
+**Question:** What determines housing lottery priority for juniors and seniors before random tie-breaking?
 
 **Answer:**
 
 ```
+For juniors and seniors, housing lottery priority is ordered by accumulated credit hours before any random tie-breaking.
+Source: admin_housing_lottery.txt
 ```
 
 **My relevance cutoff:** 0.6
@@ -172,9 +160,10 @@ A cutoff below 0.4938 could reject my answerable adviser question. A cutoff abov
 
      Milestone 5. -->
 
-**1.**
+**1.** I shared five campus documents with Codex and asked for help creating test questions and acceptance criteria. It suggested questions with expected answer phrases and drafted criteria with explanations. Through follow-up requests, I refined the chunk-quality criterion to specify which five chunks I would inspect and added a financial-aid example. I used AI-generated wording in both questions.py and criteria.md
 
-**2.**
+
+**2.** I shared the starter chunker and asked how to adapt it. Codex suggested keeping each short campus document intact and supplied a replacement split_documents function. I replaced the fallback call with that code, saved it, and rebuilt the index. The result remained 88 chunks, so I documented this as a deliberate whole-document strategy rather than claiming that it improved retrieval. I also used Codex to help interpret my measured distances and retained the 0.6 cutoff because it separated my ten example questions.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
