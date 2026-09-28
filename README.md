@@ -180,48 +180,112 @@ A cutoff below 0.4938 could reject my answerable adviser question. A cutoff abov
 
 ## Run Log — Before
 
-<!-- Your five criteria, three runs each. `python run_eval.py --label before`
-     runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
-     writes it all into results/ for you. Targets come from criteria.md; the
-     verdict column is your call.
+Baseline evidence: [Full baseline run](results/run_2026-09-27_1956_before.md), produced by `run_eval.py::main`, using `store.py::search` and chunks from `chunker.py::split_documents`.
 
-     Criterion 3 is measured in one deterministic pass rather than three, so
-     the same number goes in all three run columns. That's correct, not lazy.
-
-     Milestone 1. -->
+Settings: `campus_life`, `TOP_K = 5`, `THRESHOLD = 0.6`. Each of the five in-corpus questions was answered three times with caching off. The judgments below are manual; the blank scorer columns in the saved log are not failures.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunks contain the answer | At least 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 2. Every answer names a source | 5 of 5 in-corpus answers | 5 of 5 | 5 of 5 | 5 of 5 | MET for in-corpus answers |
+| 3. Gate stops out-of-corpus questions | At least 4 of 5 | 5 of 5* | 5 of 5* | 5 of 5* | MET |
+| 4. Chunks preserve complete explanations | At least 4 of 5 sampled chunks | 5 of 5** | Same sample** | Same sample** | MET under the boundary-preservation interpretation below |
+| 5. Cited sources support the answers | At least 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
 
-<!-- Underneath, paste the REAL output for each criterion from one of your
-     runs — the actual text your system produced, not a description of it.
-     Name the file and function that produced it. -->
+*Criterion 3 was measured in one deterministic pass by `run_eval.py::check_out_of_scope`; the same result is repeated as directed by the template. These are not three separate gate tests. The earlier `app.py ask` check for the Mongolia question also returned the required refusal text.
+
+**Criterion 4 was inspected once using the five unchanged README samples, also saved in [chunks_before.txt](results/chunks_before.txt). I checked for sentences cut by chunk boundaries and for retained conditions or contrasts. Original headings and sentence fragments remain in the source documents. This is a source-preservation judgment, not a claim that every source sentence is grammatically complete, and it is not three independent inspections.
+
+Criterion 2 is scored here on the five in-corpus answers in each run. The out-of-corpus refusal has no citation. The original phrase “every answer” is ambiguous about refusals, so this scope must remain explicit rather than claiming that every system response includes a source.
+
+### Actual evidence
+
+**Criterion 1 — retrieval and chunk contents.** The baseline log records this retrieval for the transcript question in run 1:
+
+```text
+- Best distance: 0.2477 (passed the gate)
+- Sources retrieved: admin_add_drop_deadline.txt, admin_grade_appeals.txt, admin_pass_fail_option.txt, admin_transcript_requests.txt, admin_withdrawal_deadline.txt
+```
+
+The matching chunk, produced by `chunker.py::split_documents` and displayed by `app.py chunks -n 5`, contains:
+
+```text
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
+```
+
+The other four questions retrieved their corresponding financial-aid, declaring-a-major, dining-dollars, and housing-lottery documents in all three runs.
+
+**Criteria 2 and 5 — source naming and supported answers.** These are actual run-1 answers recorded by `run_eval.py::main` in the baseline log:
+
+```text
+If you drop a course after week two, it shows as a "W" on your transcript (admin_add_drop_deadline.txt).
+```
+
+```text
+Work-study earnings do not count against your financial aid the way ordinary income does (admin_campus_jobs_and_financial_aid.txt).
+```
+
+```text
+Declaring a major assigns you a departmental adviser.
+
+Source: admin_declaring_a_major.txt
+```
+
+```text
+Unused dining dollars disappear in May.
+
+Source: admin_dining_dollars.txt
+```
+
+```text
+For juniors and seniors, housing lottery priority is determined by accumulated credit hours before any random tie-breaking.
+
+Source: `admin_housing_lottery.txt`
+```
+
+The full log preserves runs 2 and 3 as well. All 15 answers address their questions, name a source, and match the campus facts being tested.
+
+**Criterion 3 — gate.** The baseline log, produced by `run_eval.py::check_out_of_scope`, states:
+
+```text
+Produced by `run_eval.py::check_out_of_scope`, cutoff 0.6. Refused 5 of 5.
+```
+
+The five best distances were 0.825, 0.934, 0.886, 0.844, and 0.896, all above 0.6. The separate, previously observed `app.py ask` output for “What is the capital of Mongolia?” was:
+
+```text
+I don't have enough information about that.
+```
+
+**Criterion 4 — preserved contrast.** The transcript chunk above retains both the week-six drop window and the week-two boundary for a W. Another actual sample from `housing_innisfree_hall.txt#0`, produced by `chunker.py::split_documents`, preserves both statements:
+
+```text
+The good: the shared-bathroom-between-two-rooms arrangement is the best compromise on campus.
+
+The bad: no air conditioning, which matters for the first three weeks of September.
+```
+
+All five complete samples remain in the Unit 1 Sample Chunks section and in `results/chunks_before.txt`.
 
 ## Verdicts
 
-<!-- MET or MISSED for each of the five, against the target you wrote last
-     unit — not a new one. Plus a sentence on how you decided. That sentence
-     matters most where it was close.
-
-     If your target said 4 of 5 and your runs came out 4, 3, 4, that's a MISS.
-     The target has to hold, not show up occasionally.
-
-     Milestone 2. -->
-
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | MET | All five questions retrieved an answer-containing document in every run, exceeding the 4-of-5 target. |
+| 2 | Every answer names a source | MET for in-corpus answers | All 15 in-corpus answers name a source. Refusals are excluded from this count; the original wording needs that scope clarified. |
+| 3 | Gate stops out-of-corpus questions | MET | All five out-of-scope questions were refused in the deterministic gate check. The separate Mongolia check displayed the required refusal message. |
+| 4 | Chunks preserve complete explanations | MET under stated interpretation | One inspection found all five samples retained their full source text and contrasts without cutting sentences. This does not assert grammatical completeness of original fragments. |
+| 5 | Cited sources support the answers | MET | All five answers in each of the three runs address the question and state facts supported by their cited documents; none refuses an in-corpus question. |
+
+
 
 ## Diagnoses
+
+Under the scoring interpretations documented above, no baseline criteria were missed. All five test questions retrieved an answer-containing source, and all three answer runs named sources and stayed supported by those sources. The relevance gate refused all five out-of-scope questions.
+
+I inspected the five README sample chunks once. All five preserve complete source documents, including their conditions and contrasts, with no sentence cut off by the chunker. Some documents contain original sentence fragments, so this result measures preservation of source text rather than grammatical quality.
+
+These results do not establish that the system works equally well on harder questions. My five questions each ask for a fact stated directly in one short document, and my out-of-scope questions are clearly unrelated to campus life. For a future evaluation, I would consider tightening the retrieval target from 4/5 to 5/5 and adding questions that require combining information across documents. I am keeping the original targets for this comparison.
 
 <!-- For each miss: which stage caused it, and how. The stage alone isn't
      enough — you need the mechanism.
