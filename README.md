@@ -307,9 +307,9 @@ These results do not establish that the system works equally well on harder ques
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** I reduced TOP_K in config.py from 5 to 3.
 
-**Why I picked it:**
+**Why I picked it:** All five baseline questions retrieved their answer-containing document first. Some additional retrieved documents were unrelated to the specific answer. I am testing whether retrieving three chunks preserves answer quality while reducing the context sent to the model. I kept the questions, chunking strategy, model, and relevance cutoff unchanged.
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
