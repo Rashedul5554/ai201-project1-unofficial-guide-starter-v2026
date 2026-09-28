@@ -316,39 +316,92 @@ These results do not establish that the system works equally well on harder ques
 
 ### Run Log — After
 
-<!-- Same format, same five criteria, three runs each.
-     `python run_eval.py --label after` -->
+Evidence: [After run](results/run_2026-09-27_2031_after.md), produced by `run_eval.py::main`, with retrieval from `store.py::search` and chunks from `chunker.py::split_documents`.
+
+The only pipeline change was `TOP_K`, from 5 to 3. The cutoff remained 0.6. The same five in-corpus questions were answered three times with caching off. These are manual judgments, using the same scoring interpretations as the baseline.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunks contain the answer | At least 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+| 2. Every answer names a source | 5 of 5 in-corpus answers | 5 of 5 | 5 of 5 | 5 of 5 | MET for in-corpus answers |
+| 3. Gate stops out-of-corpus questions | At least 4 of 5 | 5 of 5* | 5 of 5* | 5 of 5* | MET |
+| 4. Chunks preserve complete explanations | At least 4 of 5 sampled chunks | Baseline assessment retained** | Same assessment** | Same assessment** | MET under the baseline interpretation |
+| 5. Cited sources support the answers | At least 4 of 5 | 5 of 5 | 5 of 5 | 5 of 5 | MET |
+
+*The gate was measured in one deterministic pass, not three independent trials. `run_eval.py::check_out_of_scope` reported five refusals out of five.
+
+**Changing the number of retrieved chunks does not change the chunk contents. I retained the baseline inspection of the five samples in `results/chunks_before.txt`: 5 of 5 preserved source text without a sentence cut by the chunker. I did not perform three new chunk inspections. Original sentence fragments are not treated as chunking errors.
+
+### Actual after-run evidence
+
+For criterion 1, the transcript question retrieved the answer-containing document in every run. Run 1 recorded:
+
+```text
+- Best distance: 0.2477 (passed the gate)
+- Sources retrieved: admin_add_drop_deadline.txt, admin_pass_fail_option.txt, admin_withdrawal_deadline.txt
+```
+
+The other four questions also retained their answer-containing documents. Their best distances remained 0.2000, 0.4938, 0.2675, and 0.2087.
+
+For criteria 2 and 5, these are the actual run-1 answers recorded by `run_eval.py::main`:
+
+```text
+If you drop a course after week two, it shows as a W on your transcript.
+
+Source: admin_add_drop_deadline.txt
+```
+
+```text
+Work-study earnings do not count against your financial aid the way ordinary income does.
+
+Source: admin_campus_jobs_and_financial_aid.txt
+```
+
+```text
+Declaring a major assigns you a departmental adviser (admin_declaring_a_major.txt).
+```
+
+```text
+Unused dining dollars disappear in May.
+
+Source: admin_dining_dollars.txt
+```
+
+```text
+For juniors and seniors, accumulated credit hours determine housing lottery priority before any random tie-breaking.
+
+Source: admin_housing_lottery.txt
+```
+
+All 15 answers in the full after log state the expected campus fact and name the corresponding source. Minor wording and citation-format differences do not change those facts.
+
+For criterion 3, the after log states:
+
+```text
+Produced by `run_eval.py::check_out_of_scope`, cutoff 0.6. Refused 5 of 5.
+```
+
+For criterion 4, the unchanged sample text and its producer are preserved in the baseline evidence and Unit 1 Sample Chunks section; no new chunk output is claimed here.
 
 **Did it help?**
 
-<!-- Say plainly whether it did, and how you know. If it made things worse,
-     say that — a change that backfired, honestly reported, earns full credit
-     and is more interesting than one that worked. What matters is that you can
-     tell.
+It reduced input tokens while preserving the observed results on these questions. Both evaluations made 15 model calls with caching off. The before terminal summary reported 8,267 total tokens (7,851 input, 416 output); the after summary reported 5,690 total tokens (5,283 input, 407 output). Input tokens decreased by 2,568, approximately 32.7%, and total tokens decreased by 2,577, approximately 31.2%.
 
-     Milestone 4. -->
+The five in-corpus questions still retrieved their answer-containing documents, and all 15 generated answers remained supported and cited. The gate still refused all five unrelated questions. This demonstrates reduced token use on this test set, not improved accuracy or a measured speed improvement. Some unrelated documents remain among the three retrieved chunks.
 
 ## What's Still Broken
 
-<!-- For each criterion still missed after your fix: what you'd do about it,
-     and why you stopped where you did.
+Under the documented scoring interpretations, none of the evaluated targets was missed. However, the tests are limited: each in-corpus question asks for a fact available in one short document, and the out-of-scope questions are clearly unrelated. I have not established performance on ambiguous questions, questions requiring several documents, or questions that sound campus-related but have no answer in the corpus. Three retrieved chunks could omit useful evidence for those questions.
 
-     "I ran out of time" is fine if it's true. Pretending nothing is left is
-     not.
-
-     Milestone 5. -->
+The wording of criteria 2 and 4 also needs clearer scope: whether refusals count as answers requiring citations, and whether original sentence fragments count as chunk-quality failures. I have made my interpretations explicit and preserved the original criteria. I stopped after one controlled change so the before/after comparison isolates the effect of `TOP_K`.
 
 ## What I'd Do Differently
 
-<!-- Knowing what you know now — which of your five criteria would you write
-     differently, and why?
+For a future evaluation, I would tighten criterion 1 to require answer-containing evidence within the top three results for all five original questions, and add a separate, harder set of questions. I would include questions requiring multiple documents and campus related questions that the corpus cannot answer. I would keep their results separate from this original comparison.
 
-     Milestone 5. -->
+I would write criterion 2 to apply explicitly to substantive answers, with a separate requirement for appropriate refusals. For criterion 4, I would specify preservation of source sentences and associated exceptions without penalizing headings or fragments already present in the source. I would also define the sampling procedure and distinguish a deterministic inspection from repeated generation trials. These are prospective changes; I have not lowered the original targets or replaced the questions used in this comparison.
+
+## How I Used AI in Unit 2
+
+I shared the baseline log, criteria, and sample chunks with Codex. It helped aggregate the results into criterion-level judgments and draft the README evidence. It also identified ambiguity about refusals and source sentence fragments. I documented those scoring interpretations rather than claiming that every system response has a citation or that the chunk inspection happened three times.
+Codex suggested reducing `TOP_K` from 5 to 3 because the answer-containing documents were already ranked first. I made that change and ran the same evaluation again. I shared the actual after log and terminal totals, and used Codex to help compare the answers and calculate the token reduction. The final write-up uses AI-assisted wording and reports reduced token use without claiming improved accuracy.
